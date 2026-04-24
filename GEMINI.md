@@ -12,7 +12,7 @@ Aplicación web interactiva que visualiza y compara métricas musicales (valenci
 ## 🛠️ Stack Tecnológico Principal
 - **Framework Web:** Next.js (App Router, versión 14/15+)
 - **Lenguaje:** TypeScript (Tipado estricto obligatorio)
-- **Estilos:** Tailwind CSS (Uso de clases utilitarias, diseño oscuro por defecto usando la paleta `zinc` y acentos en `emerald`).
+- **Estilos:** Tailwind CSS (Uso de clases utilitarias, diseño oscuro por defecto).
 - **Runtime y Paquetes:** Bun
 - **Procesamiento de Datos (Offline):** Python, `pandas`, `pysentimiento`.
 

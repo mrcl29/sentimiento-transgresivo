@@ -2,16 +2,43 @@
 
 @layer base {
   :root {
-    /* Configuración oscura por defecto con la paleta Zinc */
-    background-color: var(--color-zinc-950);
-    color: var(--color-zinc-50);
+    /* Configuración oscura más cálida con la paleta Stone (más humana y terrenal) */
+    background-color: var(--color-stone-950);
+    color: var(--color-stone-50);
     color-scheme: dark;
   }
 
-  /* Estética Brutalista: Acentos en Emerald para las selecciones de texto */
+  /* Acentos en rojo oscuro representativo de Extremoduro */
   ::selection {
-    background-color: var(--color-emerald-500);
-    color: var(--color-zinc-950);
+    background-color: var(--color-red-700);
+    color: var(--color-stone-50);
+  }
+
+  /* --- Barra de scroll personalizada (efecto superpuesto e invisible por defecto) --- */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent; /* El fondo es transparente para que no modifique el fondo de la web */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: transparent; /* Oculta por defecto */
+    border-radius: 6px;
+    border: 3px solid transparent; /* Bordes transparentes para dar el efecto de que flota (pill) */
+    background-clip: padding-box;
+  }
+
+  /* Aparece al pasar el ratón por cualquier área que tenga scroll (pantalla o modal) */
+  :hover::-webkit-scrollbar-thumb {
+    background-color: var(--color-stone-700);
+  }
+
+  /* Al interactuar directamente con la barra, se resalta con el color rojo */
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-red-700);
   }
 }
 
