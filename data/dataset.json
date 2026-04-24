@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1",
+    "artista": "Extremoduro",
+    "album": "Ágila",
+    "cancion": "So payaso",
+    "sentimiento": { "pos": 0.12, "neg": 0.75, "neu": 0.13 },
+    "spotify": { "valence": 0.45, "energy": 0.88, "danceability": 0.56 },
+    "letra": "Dices que a veces..."
+  },
+  {
+    "id": "2",
+    "artista": "Robe",
+    "album": "Se nos lleva el aire",
+    "cancion": "El hombre pájaro",
+    "sentimiento": { "pos": 0.60, "neg": 0.10, "neu": 0.30 },
+    "spotify": { "valence": 0.70, "energy": 0.50, "danceability": 0.40 },
+    "letra": "Me ha dicho un pajarito..."
+  }
+]
