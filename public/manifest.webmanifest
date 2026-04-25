@@ -1,0 +1,23 @@
+{
+  "name": "Sentimiento Transgresivo",
+  "short_name": "Sentimiento",
+  "description": "Visualización y comparación de métricas musicales y análisis de sentimiento de las discografías de Extremoduro y Robe.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.webp",
+      "sizes": "300x300",
+      "type": "image/webp",
+      "purpose": "any"
+    }
+  ]
+}

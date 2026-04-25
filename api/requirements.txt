@@ -1,0 +1,7 @@
+fastapi
+pydantic
+sentiment-analysis-spanish
+scikit-learn
+httpx
+python-dotenv
+pytest
