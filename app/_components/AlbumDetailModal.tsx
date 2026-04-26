@@ -13,6 +13,8 @@ interface AlbumDetailModalProps {
   sortedTracks: Track[]
   onSort: (key: keyof Track) => void
   onViewLyrics: (track: Track) => void
+  onToggleCompare: (track: Track) => void
+  isInCompareList: (trackId: string) => boolean
   onClose: () => void
 }
 
@@ -28,6 +30,8 @@ export default function AlbumDetailModal({
   sortedTracks,
   onSort,
   onViewLyrics,
+  onToggleCompare,
+  isInCompareList,
   onClose,
 }: AlbumDetailModalProps) {
   return (
@@ -110,7 +114,13 @@ export default function AlbumDetailModal({
             </thead>
             <tbody className="divide-y divide-stone-800/50">
               {sortedTracks.map((track) => (
-                <TrackRow key={track.track_id} track={track} onViewLyrics={onViewLyrics} />
+                <TrackRow
+                  key={track.track_id}
+                  track={track}
+                  onViewLyrics={onViewLyrics}
+                  onToggleCompare={onToggleCompare}
+                  isInCompareList={isInCompareList(track.track_id)}
+                />
               ))}
             </tbody>
           </table>
