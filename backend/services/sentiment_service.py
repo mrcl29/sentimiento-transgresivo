@@ -1,52 +1,48 @@
 import os
-import httpx
 from typing import Dict, Any
+from fastapi import HTTPException
+from huggingface_hub import AsyncInferenceClient
 
 class SentimentService:
-    """
-    Servicio de análisis de sentimientos utilizando la API de Inferencia de Hugging Face.
-    Sigue el principio de Responsabilidad Única (SRP) aislando la lógica HTTP.
-    """
-
     def __init__(self):
-        self.api_url = "https://api-inference.huggingface.co/models/pysentimiento/robertuito-sentiment-analysis"
+        self.model_id = "nlptown/bert-base-multilingual-uncased-sentiment"
 
-        hf_token = os.getenv("HF_TOKEN")
+        raw_token = os.getenv("HF_TOKEN", "")
+        hf_token = raw_token.strip().strip('"').strip("'")
+
         if not hf_token:
             raise ValueError("La variable de entorno HF_TOKEN no está configurada.")
 
-        self.headers = {"Authorization": f"Bearer {hf_token}"}
+        self.client = AsyncInferenceClient(model=self.model_id, token=hf_token)
 
     async def analyze(self, text: str) -> Dict[str, Any]:
-        """
-        Envía el texto a Hugging Face y formatea la respuesta.
+        try:
+            results = await self.client.text_classification(text)
 
-        Args:
-            text (str): Texto a analizar.
+            probas = {"POS": 0.0, "NEU": 0.0, "NEG": 0.0}
 
-        Returns:
-            Dict[str, Any]: Diccionario con las probabilidades y la etiqueta ganadora.
-        """
-        payload = {"inputs": text}
+            for item in results:
+                label = item.label
+                score = item.score
 
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                self.api_url,
-                headers=self.headers,
-                json=payload,
-                timeout=15.0
-            )
-
-            response.raise_for_status()
-
-            data = response.json()[0]
-
-            probas = {item['label']: item['score'] for item in data}
+                if label in ["1 star", "2 stars"]:
+                    probas["NEG"] += score
+                elif label == "3 stars":
+                    probas["NEU"] += score
+                elif label in ["4 stars", "5 stars"]:
+                    probas["POS"] += score
 
             best_label = max(probas, key=probas.get)
 
             return {
                 "output": probas,
                 "label": best_label,
-                "score": probas.get("POS", 0)
+                "score": probas.get("POS", 0.0)
             }
+
+        except Exception as e:
+            print(f"Error interno del SDK de HF: {str(e)}")
+            raise HTTPException(
+                status_code=502,
+                detail=f"Error del servicio de IA: {str(e)}"
+            )

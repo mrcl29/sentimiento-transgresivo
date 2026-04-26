@@ -9,3 +9,4 @@ lyricsgenius
 wordcloud
 matplotlib
 seaborn
+huggingface_hub

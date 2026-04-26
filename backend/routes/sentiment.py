@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
-from httpx import HTTPStatusError
 from services.sentiment_service import SentimentService
 
 router = APIRouter()
@@ -23,11 +22,7 @@ async def analyze_sentiment(
     try:
         result = await service.analyze(request.text)
         return result
-
-    except HTTPStatusError as e:
-        raise HTTPException(
-            status_code=502,
-            detail=f"Error comunicándose con Hugging Face: {e.response.status_code}"
-        )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
