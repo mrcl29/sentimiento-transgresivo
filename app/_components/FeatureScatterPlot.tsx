@@ -37,7 +37,7 @@ const CHART_METRICS = [
     { label: 'Tempo', key: 'tempo', className: '', justifyClass: '' }
 ]
 
-export default function FeatureScatterPlot({ tracks }: { tracks: Track[] }) {
+export default function FeatureScatterPlot({ tracks, isActive = true }: { tracks: Track[], isActive?: boolean }) {
     const [xKey, setXKey] = useState<keyof Track>('energy')
     const [yKey, setYKey] = useState<keyof Track>('acousticness')
 
@@ -141,50 +141,52 @@ export default function FeatureScatterPlot({ tracks }: { tracks: Track[] }) {
                 </div>
             </div>
 
-            <div className="w-full bg-stone-900/40 border border-stone-800 p-4 sm:p-6 rounded-sm shadow-inner">
-                <ResponsiveContainer width="100%" height={500}>
-                    <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 10 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#292524" vertical={true} horizontal={true} />
-                        <XAxis 
-                            type="number" 
-                            dataKey="x" 
-                            name={xLabel} 
-                            tick={{ fill: '#78716c', fontSize: 12 }}
-                            tickFormatter={(val) => val.toFixed(1)}
-                            tickMargin={10}
-                            domain={['auto', 'auto']}
-                        />
-                        <YAxis 
-                            type="number" 
-                            dataKey="y" 
-                            name={yLabel} 
-                            tick={{ fill: '#78716c', fontSize: 12 }} 
-                            tickFormatter={(val) => val.toFixed(1)}
-                            tickMargin={10}
-                            domain={['auto', 'auto']}
-                        />
-                        {/* ZAxis controla el tamaño del punto (range es el área min/max) */}
-                        <ZAxis type="number" dataKey="z" range={[100, 800]} name="Duración" />
-                        <Tooltip 
-                            content={<CustomTooltip />} 
-                            cursor={{ strokeDasharray: '3 3', stroke: '#57534e' }} 
-                            isAnimationActive={false}
-                        />
-                        <Legend 
-                            wrapperStyle={{ fontSize: '12px', paddingTop: '20px', color: '#a8a29e' }}
-                            iconType="circle"
-                        />
-                        {datasets.map((ds) => (
-                            <Scatter 
-                                key={ds.album} 
-                                name={ds.album} 
-                                data={ds.data} 
-                                fill={ds.color} 
-                                opacity={0.75}
+            <div className="w-full bg-stone-900/40 border border-stone-800 p-4 sm:p-6 rounded-sm shadow-inner min-h-[500px]">
+                {isActive && (
+                    <ResponsiveContainer width="100%" height={500}>
+                        <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 10 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#292524" vertical={true} horizontal={true} />
+                            <XAxis 
+                                type="number" 
+                                dataKey="x" 
+                                name={xLabel} 
+                                tick={{ fill: '#78716c', fontSize: 12 }}
+                                tickFormatter={(val) => val.toFixed(1)}
+                                tickMargin={10}
+                                domain={['auto', 'auto']}
                             />
-                        ))}
-                    </ScatterChart>
-                </ResponsiveContainer>
+                            <YAxis 
+                                type="number" 
+                                dataKey="y" 
+                                name={yLabel} 
+                                tick={{ fill: '#78716c', fontSize: 12 }} 
+                                tickFormatter={(val) => val.toFixed(1)}
+                                tickMargin={10}
+                                domain={['auto', 'auto']}
+                            />
+                            {/* ZAxis controla el tamaño del punto (range es el área min/max) */}
+                            <ZAxis type="number" dataKey="z" range={[100, 800]} name="Duración" />
+                            <Tooltip 
+                                content={<CustomTooltip />} 
+                                cursor={{ strokeDasharray: '3 3', stroke: '#57534e' }} 
+                                isAnimationActive={false}
+                            />
+                            <Legend 
+                                wrapperStyle={{ fontSize: '12px', paddingTop: '20px', color: '#a8a29e' }}
+                                iconType="circle"
+                            />
+                            {datasets.map((ds) => (
+                                <Scatter 
+                                    key={ds.album} 
+                                    name={ds.album} 
+                                    data={ds.data} 
+                                    fill={ds.color} 
+                                    opacity={0.75}
+                                />
+                            ))}
+                        </ScatterChart>
+                    </ResponsiveContainer>
+                )}
             </div>
         </div>
     )

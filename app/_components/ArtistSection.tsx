@@ -9,6 +9,8 @@ interface ArtistSectionProps {
   onOpenAlbum: (album: Album) => void
   onHoverStart: (album: Album) => void
   onHoverEnd: () => void
+  onToggleAlbum: (album: Album) => void
+  isAlbumFullySelected: (album: Album) => boolean
 }
 
 /**
@@ -22,6 +24,8 @@ export default function ArtistSection({
   onOpenAlbum,
   onHoverStart,
   onHoverEnd,
+  onToggleAlbum,
+  isAlbumFullySelected,
 }: ArtistSectionProps) {
   return (
     <section className="mb-12 last:mb-0">
@@ -37,6 +41,8 @@ export default function ArtistSection({
             onOpen={onOpenAlbum}
             onHoverStart={onHoverStart}
             onHoverEnd={onHoverEnd}
+            onToggleAlbum={onToggleAlbum}
+            isFullySelected={isAlbumFullySelected(album)}
           />
         ))}
       </div>

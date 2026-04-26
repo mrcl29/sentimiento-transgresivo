@@ -23,10 +23,35 @@ export function useCompareList() {
         setTracks(prev => prev.filter(t => t.track_id !== trackId))
     }, [])
 
+    const toggleAlbumTracks = useCallback((albumTracks: Track[]) => {
+        setTracks(prev => {
+            if (!albumTracks || albumTracks.length === 0) return prev
+            const allInList = albumTracks.every(track => 
+                prev.some(t => t.track_id === track.track_id)
+            )
+            if (allInList) {
+                return prev.filter(t => !albumTracks.some(at => at.track_id === t.track_id))
+            } else {
+                const missing = albumTracks.filter(track => 
+                    !prev.some(t => t.track_id === track.track_id)
+                )
+                return [...prev, ...missing]
+            }
+        })
+    }, [])
+
     const clearAll = useCallback(() => setTracks([]), [])
 
     const isInList = useCallback(
         (trackId: string) => tracks.some(t => t.track_id === trackId),
+        [tracks]
+    )
+
+    const isAlbumFullySelected = useCallback(
+        (albumTracks: Track[]) => {
+            if (!albumTracks || albumTracks.length === 0) return false
+            return albumTracks.every(track => tracks.some(t => t.track_id === track.track_id))
+        },
         [tracks]
     )
 
@@ -46,8 +71,10 @@ export function useCompareList() {
         isModalAnimating,
         toggleTrack,
         removeTrack,
+        toggleAlbumTracks,
         clearAll,
         isInList,
+        isAlbumFullySelected,
         openCompareModal,
         closeCompareModal,
     }

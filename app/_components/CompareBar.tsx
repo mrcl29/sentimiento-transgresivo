@@ -29,7 +29,7 @@ export default function CompareBar({ tracks, onRemove, onClear }: CompareBarProp
                         </span>
                         <button
                             onClick={onClear}
-                            className="text-red-500 text-xs font-bold uppercase hover:text-red-400 transition-colors"
+                            className="text-red-500 text-xs font-bold uppercase hover:text-red-400 transition-colors cursor-pointer"
                         >
                             Limpiar
                         </button>
@@ -50,7 +50,7 @@ export default function CompareBar({ tracks, onRemove, onClear }: CompareBarProp
                                 </div>
                                 <button
                                     onClick={() => onRemove(track.track_id)}
-                                    className="text-stone-600 hover:text-red-500 transition-colors shrink-0 w-6 h-6 flex items-center justify-center text-lg font-bold"
+                                    className="text-stone-600 hover:text-red-500 transition-colors shrink-0 w-6 h-6 flex items-center justify-center text-lg font-bold cursor-pointer"
                                     title="Eliminar de la comparación"
                                 >
                                     ×
@@ -64,7 +64,7 @@ export default function CompareBar({ tracks, onRemove, onClear }: CompareBarProp
             {/* Botón flotante */}
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="bg-red-800 text-stone-50 px-4 py-2.5 rounded-sm font-bold text-sm uppercase tracking-wider shadow-lg shadow-red-900/30 hover:bg-red-700 hover:shadow-red-900/50 active:scale-95 transition-all flex items-center gap-2.5"
+                className="bg-red-800 text-stone-50 px-4 py-2.5 rounded-sm font-bold text-sm uppercase tracking-wider shadow-lg shadow-red-900/30 hover:bg-red-700 hover:shadow-red-900/50 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
             >
                 <span className="bg-red-600 min-w-6 h-6 rounded-full flex items-center justify-center text-xs font-black px-1.5">
                     {tracks.length}

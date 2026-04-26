@@ -41,7 +41,7 @@ export default function TrackRow({
                                     e.stopPropagation()
                                     onToggleCompare(track)
                                 }}
-                                className={`w-7 h-7 flex items-center justify-center text-sm font-bold rounded-sm border transition-all ${
+                                className={`w-7 h-7 flex items-center justify-center text-sm font-bold rounded-sm border transition-all cursor-pointer ${
                                     isInCompareList
                                         ? 'bg-red-800 border-red-700 text-stone-100 hover:bg-red-700'
                                         : 'border-stone-700 text-stone-500 hover:bg-stone-800 hover:text-stone-100'
@@ -57,7 +57,7 @@ export default function TrackRow({
                                     e.stopPropagation()
                                     onViewLyrics(track)
                                 }}
-                                className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-stone-400 border border-stone-700 rounded-sm hover:bg-stone-800 hover:text-stone-100 transition-colors shrink-0"
+                                className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-stone-400 border border-stone-700 rounded-sm hover:bg-stone-800 hover:text-stone-100 transition-colors shrink-0 cursor-pointer"
                                 title="Ver letra"
                             >
                                 Letra

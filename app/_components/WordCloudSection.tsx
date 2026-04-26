@@ -21,7 +21,6 @@ export default function WordCloudSection({ tracks }: { tracks: Track[] }) {
             setProgress(0)
 
             try {
-                // 1. Fetch lyrics for all tracks
                 let allLyrics = ''
                 for (let i = 0; i < tracks.length; i++) {
                     const track = tracks[i]
@@ -47,7 +46,6 @@ export default function WordCloudSection({ tracks }: { tracks: Track[] }) {
                     throw new Error("No se encontraron letras para las canciones seleccionadas.")
                 }
 
-                // 2. Fetch wordcloud image
                 const wcRes = await fetch('/api/wordcloud', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -81,7 +79,7 @@ export default function WordCloudSection({ tracks }: { tracks: Track[] }) {
             isMounted = false
             controller.abort()
         }
-    }, [tracks]) // Re-run when selected tracks change
+    }, [tracks])
 
     if (tracks.length === 0) return null
 
@@ -109,9 +107,9 @@ export default function WordCloudSection({ tracks }: { tracks: Track[] }) {
                         {error}
                     </div>
                 ) : imageUrl ? (
-                    <img 
-                        src={imageUrl} 
-                        alt="Nube de palabras de las letras" 
+                    <img
+                        src={imageUrl}
+                        alt="Nube de palabras de las letras"
                         className="max-w-full h-auto max-h-[400px] object-contain rounded-sm shadow-xl shadow-black/50"
                     />
                 ) : null}

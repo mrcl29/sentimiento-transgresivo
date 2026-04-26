@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { Track, SortKey, SortDirection } from '@/app/_types'
 import { METRIC_COLUMNS } from '@/app/_lib/constants'
 import { useTrackSort } from '@/app/_hooks/useTrackSort'
@@ -8,6 +8,7 @@ import SortableHeader from './SortableHeader'
 import TrackRow from './TrackRow'
 import FeatureScatterPlot from './FeatureScatterPlot'
 import WordCloudSection from './WordCloudSection'
+import SentimentSection from './SentimentSection'
 
 interface CompareModalProps {
     tracks: Track[]
@@ -22,6 +23,8 @@ interface CompareModalProps {
  * Modal a pantalla completa para comparar las canciones seleccionadas.
  * Incluye columnas extra de Artista y Álbum, además de las métricas habituales.
  */
+type TabKey = 'tabla' | 'caracteristicas' | 'nube' | 'sentimiento'
+
 export default function CompareModal({
     tracks,
     isAnimating,
@@ -30,6 +33,7 @@ export default function CompareModal({
     isInCompareList,
     onClose,
 }: CompareModalProps) {
+    const [activeTab, setActiveTab] = useState<TabKey>('tabla')
     const { sortKey, sortDirection, handleSort, sortedTracks } = useTrackSort(tracks)
 
     useEffect(() => {
@@ -64,21 +68,47 @@ export default function CompareModal({
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Cabecera del modal */}
-                <div className="bg-stone-950/95 backdrop-blur border-b border-red-800 p-6 flex justify-between items-start shrink-0 z-20">
-                    <div>
-                        <h2 className="text-4xl sm:text-5xl font-black text-stone-50 uppercase tracking-tighter">
-                            Comparación
-                        </h2>
-                        <p className="text-xl text-red-600 font-serif italic mt-2">
-                            {tracks.length} {tracks.length === 1 ? 'canción seleccionada' : 'canciones seleccionadas'}
-                        </p>
+                <div className="bg-stone-950/95 backdrop-blur border-b border-red-800 p-6 flex flex-col gap-6 shrink-0 z-20">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h2 className="text-4xl sm:text-5xl font-black text-stone-50 uppercase tracking-tighter">
+                                Comparación
+                            </h2>
+                            <p className="text-xl text-red-600 font-serif italic mt-2">
+                                {tracks.length} {tracks.length === 1 ? 'canción seleccionada' : 'canciones seleccionadas'}
+                            </p>
+                        </div>
+                        <button
+                            onClick={onClose}
+                            className="bg-red-800 text-stone-50 font-bold px-4 py-2 uppercase hover:bg-red-600 hover:scale-105 active:scale-95 transition-all rounded-sm cursor-pointer"
+                        >
+                            Cerrar (ESC)
+                        </button>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="bg-red-800 text-stone-50 font-bold px-4 py-2 uppercase hover:bg-red-600 hover:scale-105 active:scale-95 transition-all rounded-sm"
-                    >
-                        Cerrar (ESC)
-                    </button>
+
+                    {/* Navbar */}
+                    {tracks.length > 0 && (
+                        <nav className="flex gap-2 overflow-x-auto pb-2 -mb-2 scrollbar-thin scrollbar-thumb-stone-800">
+                            {[
+                                { key: 'tabla', label: 'Lista de Canciones' },
+                                { key: 'caracteristicas', label: 'Características' },
+                                { key: 'nube', label: 'Nube de Palabras' },
+                                { key: 'sentimiento', label: 'Sentimiento' },
+                            ].map(tab => (
+                                <button
+                                    key={tab.key}
+                                    onClick={() => setActiveTab(tab.key as TabKey)}
+                                    className={`px-6 py-2 text-sm font-bold uppercase tracking-wider whitespace-nowrap transition-colors rounded-sm border cursor-pointer ${
+                                        activeTab === tab.key
+                                            ? 'bg-red-900 border-red-700 text-white'
+                                            : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200 hover:bg-stone-800'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </nav>
+                    )}
                 </div>
 
                 {/* Contenido (Tabla + Gráfico) */}
@@ -90,93 +120,98 @@ export default function CompareModal({
                     ) : (
                         <div className="min-h-max pb-8">
                             {/* Tabla */}
-                            <div className="overflow-x-auto border-b border-stone-800 relative">
+                            <div className={`${activeTab === 'tabla' ? 'block' : 'hidden'} overflow-x-auto border-b border-stone-800 relative`}>
                                 <table className="w-full text-left border-collapse min-w-300">
-                                    <thead className="sticky top-0 bg-stone-900 border-b border-stone-800 text-stone-300 text-sm uppercase font-sans z-10 shadow-md">
-                                        <tr>
-                                            <SortableHeader
-                                                label="#"
-                                                columnKey="track_number"
-                                                className="w-16"
-                                                justifyClass="justify-center"
-                                                sortKey={sortKey}
-                                                sortDirection={sortDirection}
-                                                onSort={handleSort}
-                                            />
-                                            <th className="p-4 font-medium min-w-62.5">Título</th>
-                                            <SortableHeader
-                                                label="Artista"
-                                                columnKey="artista_busqueda"
-                                                className="w-32"
-                                                justifyClass="justify-start"
-                                                sortKey={sortKey}
-                                                sortDirection={sortDirection}
-                                                onSort={handleSort}
-                                            />
-                                            <SortableHeader
-                                                label="Álbum"
-                                                columnKey="album_name"
-                                                className="w-44"
-                                                justifyClass="justify-start"
-                                                sortKey={sortKey}
-                                                sortDirection={sortDirection}
-                                                onSort={handleSort}
-                                            />
-                                            <SortableHeader
-                                                label="Duración"
-                                                columnKey="duration_ms"
-                                                className="w-24"
-                                                justifyClass="justify-center"
-                                                sortKey={sortKey}
-                                                sortDirection={sortDirection}
-                                                onSort={handleSort}
-                                            />
-                                            {METRIC_COLUMNS.map((col) => (
+                                        <thead className="sticky top-0 bg-stone-900 border-b border-stone-800 text-stone-300 text-sm uppercase font-sans z-10 shadow-md">
+                                            <tr>
                                                 <SortableHeader
-                                                    key={col.key}
-                                                    label={col.label}
-                                                    columnKey={col.key}
-                                                    className={col.className}
-                                                    justifyClass={col.justifyClass}
+                                                    label="#"
+                                                    columnKey="track_number"
+                                                    className="w-16"
+                                                    justifyClass="justify-center"
                                                     sortKey={sortKey}
                                                     sortDirection={sortDirection}
                                                     onSort={handleSort}
                                                 />
+                                                <th className="p-4 font-medium min-w-62.5">Título</th>
+                                                <SortableHeader
+                                                    label="Artista"
+                                                    columnKey="artista_busqueda"
+                                                    className="w-32"
+                                                    justifyClass="justify-start"
+                                                    sortKey={sortKey}
+                                                    sortDirection={sortDirection}
+                                                    onSort={handleSort}
+                                                />
+                                                <SortableHeader
+                                                    label="Álbum"
+                                                    columnKey="album_name"
+                                                    className="w-44"
+                                                    justifyClass="justify-start"
+                                                    sortKey={sortKey}
+                                                    sortDirection={sortDirection}
+                                                    onSort={handleSort}
+                                                />
+                                                <SortableHeader
+                                                    label="Duración"
+                                                    columnKey="duration_ms"
+                                                    className="w-24"
+                                                    justifyClass="justify-center"
+                                                    sortKey={sortKey}
+                                                    sortDirection={sortDirection}
+                                                    onSort={handleSort}
+                                                />
+                                                {METRIC_COLUMNS.map((col) => (
+                                                    <SortableHeader
+                                                        key={col.key}
+                                                        label={col.label}
+                                                        columnKey={col.key}
+                                                        className={col.className}
+                                                        justifyClass={col.justifyClass}
+                                                        sortKey={sortKey}
+                                                        sortDirection={sortDirection}
+                                                        onSort={handleSort}
+                                                    />
+                                                ))}
+                                                <SortableHeader
+                                                    label="Tempo"
+                                                    columnKey="tempo"
+                                                    className="w-28"
+                                                    justifyClass="justify-end"
+                                                    sortKey={sortKey}
+                                                    sortDirection={sortDirection}
+                                                    onSort={handleSort}
+                                                />
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-stone-800/50">
+                                            {sortedTracks.map((track) => (
+                                                <TrackRow
+                                                    key={track.track_id}
+                                                    track={track}
+                                                    showArtistAlbum
+                                                    onViewLyrics={onViewLyrics}
+                                                    onToggleCompare={onToggleCompare}
+                                                    isInCompareList={isInCompareList(track.track_id)}
+                                                />
                                             ))}
-                                            <SortableHeader
-                                                label="Tempo"
-                                                columnKey="tempo"
-                                                className="w-28"
-                                                justifyClass="justify-end"
-                                                sortKey={sortKey}
-                                                sortDirection={sortDirection}
-                                                onSort={handleSort}
-                                            />
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-stone-800/50">
-                                        {sortedTracks.map((track) => (
-                                            <TrackRow
-                                                key={track.track_id}
-                                                track={track}
-                                                showArtistAlbum
-                                                onViewLyrics={onViewLyrics}
-                                                onToggleCompare={onToggleCompare}
-                                                isInCompareList={isInCompareList(track.track_id)}
-                                            />
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            
+                                        </tbody>
+                                    </table>
+                                </div>
+
                             {/* Gráfico de Características */}
-                            <div className="px-4 sm:px-8">
-                                <FeatureScatterPlot tracks={tracks} />
+                            <div className={`${activeTab === 'caracteristicas' ? 'block' : 'hidden'} px-4 sm:px-8 mt-6`}>
+                                <FeatureScatterPlot tracks={tracks} isActive={activeTab === 'caracteristicas'} />
                             </div>
 
                             {/* Nube de Palabras */}
-                            <div className="px-4 sm:px-8 pb-12">
+                            <div className={`${activeTab === 'nube' ? 'block' : 'hidden'} px-4 sm:px-8 mt-6`}>
                                 <WordCloudSection tracks={tracks} />
+                            </div>
+
+                            {/* Sentimiento */}
+                            <div className={`${activeTab === 'sentimiento' ? 'block' : 'hidden'} px-4 sm:px-8 pb-12 mt-6`}>
+                                <SentimentSection tracks={tracks} isActive={activeTab === 'sentimiento'} />
                             </div>
                         </div>
                     )}

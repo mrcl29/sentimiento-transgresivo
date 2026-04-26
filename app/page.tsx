@@ -37,8 +37,10 @@ export default function Home() {
         isModalAnimating: isCompareAnimating,
         toggleTrack,
         removeTrack,
+        toggleAlbumTracks,
         clearAll,
         isInList,
+        isAlbumFullySelected,
         openCompareModal,
         closeCompareModal,
     } = useCompareList()
@@ -63,7 +65,7 @@ export default function Home() {
                     compareTracks.length > 0 ? (
                         <button
                             onClick={openCompareModal}
-                            className="bg-red-800 text-stone-50 font-bold px-5 py-2.5 uppercase text-sm tracking-wider hover:bg-red-700 hover:scale-105 active:scale-95 transition-all rounded-sm flex items-center gap-2.5 shrink-0"
+                            className="bg-red-800 text-stone-50 font-bold px-5 py-2.5 uppercase text-sm tracking-wider hover:bg-red-700 hover:scale-105 active:scale-95 transition-all rounded-sm flex items-center gap-2.5 shrink-0 cursor-pointer"
                         >
                             <span className="bg-red-600 min-w-6 h-6 rounded-full flex items-center justify-center text-xs font-black px-1.5">
                                 {compareTracks.length}
@@ -87,6 +89,8 @@ export default function Home() {
                     onOpenAlbum={handleOpenAlbum}
                     onHoverStart={handleMouseEnter}
                     onHoverEnd={handleMouseLeave}
+                    onToggleAlbum={(album) => toggleAlbumTracks(album.tracks)}
+                    isAlbumFullySelected={(album) => isAlbumFullySelected(album.tracks)}
                 />
             ))}
 
