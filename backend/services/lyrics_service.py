@@ -1,6 +1,6 @@
 from fastapi import HTTPException
-from genius_service import GeniusService
-from lyrics_ovh_service import LyricsOvhService
+from services.genius_service import GeniusService
+from services.lyrics_ovh_service import LyricsOvhService
 
 class UnifiedLyricsService:
     def __init__(self):
