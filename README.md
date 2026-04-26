@@ -143,12 +143,12 @@ HF_TOKEN=...          # Token de Hugging Face (para pysentimiento)
 Arrancar el servidor:
 
 ```bash
-uvicorn index:app --reload --port 8000
+uvicorn index:app --reload --port 8080
 ```
 
-La API estará disponible en [http://localhost:8000](http://localhost:8000) con documentación automática en `/docs`.
+La API estará disponible en [http://localhost:8080](http://localhost:8080) con documentación automática en `/docs`.
 
-> **Nota:** el frontend apunta por defecto al backend desplegado en Render.com. Para usar tu instancia local, configura la variable de entorno `NEXT_PUBLIC_API_URL=http://localhost:8000` en un archivo `.env.local` en la raíz del proyecto.
+> Para que la web apunte a tu backend local debes crear un `.env` en la raíz del proyecto con `NODE_ENV=development`.
 
 ---
 
