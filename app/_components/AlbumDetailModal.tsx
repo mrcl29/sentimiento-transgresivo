@@ -12,6 +12,7 @@ interface AlbumDetailModalProps {
   sortDirection: SortDirection
   sortedTracks: Track[]
   onSort: (key: keyof Track) => void
+  onViewLyrics: (track: Track) => void
   onClose: () => void
 }
 
@@ -26,6 +27,7 @@ export default function AlbumDetailModal({
   sortDirection,
   sortedTracks,
   onSort,
+  onViewLyrics,
   onClose,
 }: AlbumDetailModalProps) {
   return (
@@ -108,7 +110,7 @@ export default function AlbumDetailModal({
             </thead>
             <tbody className="divide-y divide-stone-800/50">
               {sortedTracks.map((track) => (
-                <TrackRow key={track.track_id} track={track} />
+                <TrackRow key={track.track_id} track={track} onViewLyrics={onViewLyrics} />
               ))}
             </tbody>
           </table>

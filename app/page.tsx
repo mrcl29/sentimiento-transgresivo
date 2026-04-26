@@ -7,6 +7,8 @@ import { useTrackSort } from '@/app/_hooks/useTrackSort'
 import Header from '@/app/_components/Header'
 import ArtistSection from '@/app/_components/ArtistSection'
 import AlbumDetailModal from '@/app/_components/AlbumDetailModal'
+import { useLyricsModal } from '@/app/_hooks/useLyricsModal'
+import LyricsModal from '@/app/_components/LyricsModal'
 
 export default function Home() {
   const { extremoduroAlbums, robeAlbums } = useAlbumData()
@@ -15,6 +17,17 @@ export default function Home() {
   const { sortKey, sortDirection, handleSort, resetSort, sortedTracks } = useTrackSort(
     selectedAlbum?.tracks ?? []
   )
+  const {
+    selectedTrack,
+    isAnimating: isLyricsAnimating,
+    lyrics,
+    isLoadingLyrics,
+    sentiment,
+    isLoadingSentiment,
+    openLyrics,
+    closeLyrics,
+    analyzeSentiment
+  } = useLyricsModal()
 
   const handleOpenAlbum = (album: Parameters<typeof openAlbum>[0]) => {
     resetSort()
@@ -58,7 +71,22 @@ export default function Home() {
           sortDirection={sortDirection}
           sortedTracks={sortedTracks}
           onSort={handleSort}
+          onViewLyrics={openLyrics}
           onClose={closeAlbum}
+        />
+      )}
+
+      {/* Modal de letra y sentimiento */}
+      {selectedTrack && (
+        <LyricsModal
+          track={selectedTrack}
+          isAnimating={isLyricsAnimating}
+          lyrics={lyrics}
+          isLoadingLyrics={isLoadingLyrics}
+          sentiment={sentiment}
+          isLoadingSentiment={isLoadingSentiment}
+          onAnalyze={analyzeSentiment}
+          onClose={closeLyrics}
         />
       )}
     </main>
