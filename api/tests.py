@@ -142,3 +142,23 @@ def test_generic_lyrics_endpoint():
         assert response.status_code == 200
         assert response.json() == {"lyrics": "Letra unificada"}
         mock_get_lyrics.assert_called_once_with("Standby", "Extremoduro")
+
+def test_wordcloud_endpoint():
+    """Verifica el endpoint POST /api/wordcloud."""
+    response = client.post(
+        "/api/wordcloud",
+        json={"text": "Extremoduro robe robe robe amor rock"}
+    )
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/png"
+    # El contenido debe ser una imagen (comienza con las firmas típicas de PNG)
+    assert response.content.startswith(b'\x89PNG')
+
+def test_wordcloud_endpoint_empty():
+    """Verifica el endpoint POST /api/wordcloud con texto vacío."""
+    response = client.post(
+        "/api/wordcloud",
+        json={"text": "   "}
+    )
+    assert response.status_code == 400
+    assert "vacío" in response.json()["detail"]
