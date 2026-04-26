@@ -4,6 +4,8 @@ import type { Album, Track, SortKey, SortDirection } from '@/app/_types'
 import { METRIC_COLUMNS } from '@/app/_lib/constants'
 import SortableHeader from './SortableHeader'
 import TrackRow from './TrackRow'
+import Legend from './Legend'
+import { useState } from 'react'
 
 interface AlbumDetailModalProps {
   album: Album
@@ -18,10 +20,6 @@ interface AlbumDetailModalProps {
   onClose: () => void
 }
 
-/**
- * Modal a pantalla completa con la tabla de tracks del álbum.
- * Client Component — gestiona animación, cierre y tabla ordenable.
- */
 export default function AlbumDetailModal({
   album,
   isAnimating,
@@ -34,6 +32,7 @@ export default function AlbumDetailModal({
   isInCompareList,
   onClose,
 }: AlbumDetailModalProps) {
+  const [showLegend, setShowLegend] = useState(false)
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-stone-950/90 backdrop-blur-sm p-4 sm:p-8 transition-opacity duration-300 ${
@@ -57,12 +56,27 @@ export default function AlbumDetailModal({
               {album.artist} — {album.year}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="bg-red-800 text-stone-50 font-bold px-4 py-2 uppercase hover:bg-red-600 hover:scale-105 active:scale-95 transition-all rounded-sm"
-          >
-            Cerrar (ESC)
-          </button>
+          <div className="flex gap-2 relative">
+            <button
+              onClick={() => setShowLegend(!showLegend)}
+              className={`font-bold px-4 py-2 uppercase transition-all rounded-sm flex items-center gap-2 ${
+                showLegend 
+                  ? 'bg-stone-50 text-red-800' 
+                  : 'bg-stone-900 text-stone-400 border border-stone-800 hover:text-stone-50 hover:border-red-800'
+              }`}
+              title="Información de métricas"
+            >
+              <span className="text-xl">?</span>
+              <span className="hidden sm:inline">Info</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="bg-red-800 text-stone-50 font-bold px-4 py-2 uppercase hover:bg-red-600 hover:scale-105 active:scale-95 transition-all rounded-sm"
+            >
+              Cerrar (ESC)
+            </button>
+            <Legend isOpen={showLegend} onClose={() => setShowLegend(false)} />
+          </div>
         </div>
 
         {/* Tabla de tracks */}

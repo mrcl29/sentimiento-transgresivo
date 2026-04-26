@@ -9,6 +9,7 @@ import TrackRow from './TrackRow'
 import FeatureScatterPlot from './FeatureScatterPlot'
 import WordCloudSection from './WordCloudSection'
 import SentimentSection from './SentimentSection'
+import Legend from './Legend'
 
 interface CompareModalProps {
     tracks: Track[]
@@ -34,6 +35,7 @@ export default function CompareModal({
     onClose,
 }: CompareModalProps) {
     const [activeTab, setActiveTab] = useState<TabKey>('tabla')
+    const [showLegend, setShowLegend] = useState(false)
     const { sortKey, sortDirection, handleSort, sortedTracks } = useTrackSort(tracks)
 
     useEffect(() => {
@@ -78,12 +80,27 @@ export default function CompareModal({
                                 {tracks.length} {tracks.length === 1 ? 'canción seleccionada' : 'canciones seleccionadas'}
                             </p>
                         </div>
-                        <button
-                            onClick={onClose}
-                            className="bg-red-800 text-stone-50 font-bold px-4 py-2 uppercase hover:bg-red-600 hover:scale-105 active:scale-95 transition-all rounded-sm cursor-pointer"
-                        >
-                            Cerrar (ESC)
-                        </button>
+                        <div className="flex gap-2 relative">
+                            <button
+                                onClick={() => setShowLegend(!showLegend)}
+                                className={`font-bold px-4 py-2 uppercase transition-all rounded-sm flex items-center gap-2 ${
+                                    showLegend 
+                                        ? 'bg-stone-50 text-red-800' 
+                                        : 'bg-stone-900 text-stone-400 border border-stone-800 hover:text-stone-50 hover:border-red-800'
+                                }`}
+                                title="Información de métricas"
+                            >
+                                <span className="text-xl">?</span>
+                                <span className="hidden sm:inline">Info</span>
+                            </button>
+                            <button
+                                onClick={onClose}
+                                className="bg-red-800 text-stone-50 font-bold px-4 py-2 uppercase hover:bg-red-600 hover:scale-105 active:scale-95 transition-all rounded-sm cursor-pointer"
+                            >
+                                Cerrar (ESC)
+                            </button>
+                            <Legend isOpen={showLegend} onClose={() => setShowLegend(false)} />
+                        </div>
                     </div>
 
                     {/* Navbar */}
