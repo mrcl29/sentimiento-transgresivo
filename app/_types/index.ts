@@ -30,3 +30,21 @@ export interface Track {
   letra: string
   artista_busqueda: string
 }
+
+export interface Album {
+  name: string
+  artist: string
+  year: number
+  tracks: Track[]
+}
+
+export type SortDirection = 'asc' | 'desc' | null
+
+export type SortKey = keyof Track | null
+
+export interface MetricColumn {
+  label: string
+  key: keyof Track
+  className: string
+  justifyClass: string
+}
