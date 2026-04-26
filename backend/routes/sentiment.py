@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from httpx import HTTPStatusError
-from ..services.sentiment_service import SentimentService
+from services.sentiment_service import SentimentService
 
 router = APIRouter()
 

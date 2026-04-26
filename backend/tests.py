@@ -3,11 +3,11 @@ import pytest
 from unittest.mock import patch, AsyncMock
 from fastapi.testclient import TestClient
 
-from .index import app
-from .services.sentiment_service import SentimentService
-from .services.genius_service import GeniusService
-from .services.lyrics_ovh_service import LyricsOvhService
-from .services.lyrics_service import UnifiedLyricsService
+from index import app
+from services.sentiment_service import SentimentService
+from services.genius_service import GeniusService
+from services.lyrics_ovh_service import LyricsOvhService
+from services.lyrics_service import UnifiedLyricsService
 
 client = TestClient(app)
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from ..services.genius_service import GeniusService
+from services.genius_service import GeniusService
 
 router = APIRouter()
 genius_service = GeniusService()

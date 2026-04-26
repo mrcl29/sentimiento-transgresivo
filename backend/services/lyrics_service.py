@@ -1,6 +1,6 @@
 from fastapi import HTTPException
-from .genius_service import GeniusService
-from .lyrics_ovh_service import LyricsOvhService
+from genius_service import GeniusService
+from lyrics_ovh_service import LyricsOvhService
 
 class UnifiedLyricsService:
     def __init__(self):
@@ -9,7 +9,7 @@ class UnifiedLyricsService:
 
     async def get_lyrics(self, song: str, artist: str = ""):
         lyrics = None
-        
+
         # Intentamos primero con OVH si tenemos el artista
         if artist:
             try:

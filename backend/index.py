@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .routes import sentiment, genius, lyrics, wordcloud, violinplot
+from routes import sentiment, genius, lyrics, wordcloud, violinplot
 
 app = FastAPI(title="Lyric Analysis API")
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from ..services.lyrics_service import UnifiedLyricsService
+from services.lyrics_service import UnifiedLyricsService
 
 router = APIRouter()
 lyrics_service = UnifiedLyricsService()

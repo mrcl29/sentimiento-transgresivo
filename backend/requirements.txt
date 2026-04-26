@@ -1,6 +1,5 @@
 fastapi[standard]
 pydantic
-pysentimiento
 uvicorn
 httpx
 python-dotenv
