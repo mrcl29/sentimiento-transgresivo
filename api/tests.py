@@ -63,3 +63,82 @@ def test_genius_endpoint():
         assert response.status_code == 200
         assert response.json() == mock_response_data
         mock_search.assert_called_once_with("Extremoduro")
+
+@pytest.mark.asyncio
+async def test_genius_service_get_lyrics():
+    """Verifica el método get_lyrics haciendo mock de lyricsgenius."""
+    svc = GeniusService()
+    svc.token = "fake_token"
+    
+    class MockSong:
+        def __init__(self, lyrics):
+            self.lyrics = lyrics
+
+    with patch("lyricsgenius.Genius.search_song") as mock_search_song:
+        mock_search_song.return_value = MockSong("La hoguera de los continentes")
+        
+        lyrics = await svc.get_lyrics("La hoguera", artist="Extremoduro")
+        
+        assert lyrics == "La hoguera de los continentes"
+        mock_search_song.assert_called_once_with("La hoguera", artist="Extremoduro")
+
+def test_genius_endpoint_lyrics():
+    """Verifica el endpoint GET /api/genius/lyrics."""
+    with patch("api.services.genius_service.GeniusService.get_lyrics", new_callable=AsyncMock) as mock_get_lyrics:
+        mock_get_lyrics.return_value = "La letra de la canción"
+        
+        response = client.get("/api/genius/lyrics?song=Jesucristo%20García&artist=Extremoduro")
+        
+        assert response.status_code == 200
+        assert response.json() == {"lyrics": "La letra de la canción"}
+        mock_get_lyrics.assert_called_once_with("Jesucristo García", "Extremoduro")
+
+from .services.lyrics_ovh_service import LyricsOvhService
+from .services.lyrics_service import UnifiedLyricsService
+
+@pytest.mark.asyncio
+async def test_lyrics_ovh_service_success():
+    """Verifica el servicio LyricsOvhService haciendo mock de httpx (caso éxito)."""
+    svc = LyricsOvhService()
+    mock_response_data = {"lyrics": "Letra de prueba OVH"}
+    
+    class MockResponse:
+        status_code = 200
+        def json(self):
+            return mock_response_data
+
+    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+        mock_get.return_value = MockResponse()
+        
+        lyrics = await svc.get_lyrics("Jesucristo García", "Extremoduro")
+        
+        assert lyrics == "Letra de prueba OVH"
+        mock_get.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_unified_lyrics_service_fallback():
+    """Verifica el fallback de OVH a Genius en UnifiedLyricsService."""
+    svc = UnifiedLyricsService()
+    
+    with patch("api.services.lyrics_ovh_service.LyricsOvhService.get_lyrics", new_callable=AsyncMock) as mock_ovh:
+        with patch("api.services.genius_service.GeniusService.get_lyrics", new_callable=AsyncMock) as mock_genius:
+            # Simulamos que OVH falla
+            mock_ovh.side_effect = Exception("OVH Error")
+            mock_genius.return_value = "Letra de prueba Genius"
+            
+            lyrics = await svc.get_lyrics("La vereda de la puerta de atrás", "Extremoduro")
+            
+            assert lyrics == "Letra de prueba Genius"
+            mock_ovh.assert_called_once()
+            mock_genius.assert_called_once()
+
+def test_generic_lyrics_endpoint():
+    """Verifica el endpoint GET /api/lyrics/."""
+    with patch("api.services.lyrics_service.UnifiedLyricsService.get_lyrics", new_callable=AsyncMock) as mock_get_lyrics:
+        mock_get_lyrics.return_value = "Letra unificada"
+        
+        response = client.get("/api/lyrics/?song=Standby&artist=Extremoduro")
+        
+        assert response.status_code == 200
+        assert response.json() == {"lyrics": "Letra unificada"}
+        mock_get_lyrics.assert_called_once_with("Standby", "Extremoduro")

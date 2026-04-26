@@ -1,8 +1,9 @@
-fastapi
+fastapi[standard]
 pydantic
-sentiment-analysis-spanish
-scikit-learn
+pysentimiento
+uvicorn
 httpx
 python-dotenv
 pytest
 pytest-asyncio
+lyricsgenius
