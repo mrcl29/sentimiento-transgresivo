@@ -12,6 +12,7 @@ import AlbumDetailModal from '@/app/_components/AlbumDetailModal'
 import LyricsModal from '@/app/_components/LyricsModal'
 import CompareBar from '@/app/_components/CompareBar'
 import CompareModal from '@/app/_components/CompareModal'
+import BackendHealth from '@/app/_components/BackendHealth'
 
 export default function Home() {
     const { extremoduroAlbums, robeAlbums } = useAlbumData()
@@ -62,17 +63,20 @@ export default function Home() {
 
             <Header
                 actions={
-                    compareTracks.length > 0 ? (
-                        <button
-                            onClick={openCompareModal}
-                            className="bg-red-800 text-stone-50 font-bold px-5 py-2.5 uppercase text-sm tracking-wider hover:bg-red-700 hover:scale-105 active:scale-95 transition-all rounded-sm flex items-center gap-2.5 shrink-0 cursor-pointer"
-                        >
-                            <span className="bg-red-600 min-w-6 h-6 rounded-full flex items-center justify-center text-xs font-black px-1.5">
-                                {compareTracks.length}
-                            </span>
-                            Comparar
-                        </button>
-                    ) : undefined
+                    <div className="flex items-center gap-4">
+                        <BackendHealth />
+                        {compareTracks.length > 0 && (
+                            <button
+                                onClick={openCompareModal}
+                                className="bg-red-800 text-stone-50 font-bold px-5 py-2.5 uppercase text-sm tracking-wider hover:bg-red-700 hover:scale-105 active:scale-95 transition-all rounded-sm flex items-center gap-2.5 shrink-0 cursor-pointer"
+                            >
+                                <span className="bg-red-600 min-w-6 h-6 rounded-full flex items-center justify-center text-xs font-black px-1.5">
+                                    {compareTracks.length}
+                                </span>
+                                Comparar
+                            </button>
+                        )}
+                    </div>
                 }
             />
 
