@@ -46,3 +46,11 @@ next-env.d.ts
 __pycache__/
 *.pyc
 .pytest_cache
+
+
+.agents/
+.gemini/
+skills-lock.json
+AGENTS.md
+GEMINI.md
+documentación.md
