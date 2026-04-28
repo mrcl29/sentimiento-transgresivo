@@ -13,6 +13,8 @@ import LyricsModal from '@/app/_components/LyricsModal'
 import CompareBar from '@/app/_components/CompareBar'
 import CompareModal from '@/app/_components/CompareModal'
 import BackendHealth from '@/app/_components/BackendHealth'
+import PredictModal from '@/app/_components/PredictModal'
+import { usePredict } from '@/app/_hooks/usePredict'
 
 export default function Home() {
     const { extremoduroAlbums, robeAlbums } = useAlbumData()
@@ -46,6 +48,19 @@ export default function Home() {
         closeCompareModal,
     } = useCompareList()
 
+    const {
+        isPredictOpen,
+        isAnimating: isPredictAnimating,
+        text: predictText,
+        setText: setPredictText,
+        result: predictResult,
+        isLoading: isPredictLoading,
+        error: predictError,
+        openPredict,
+        closePredict,
+        runPrediction
+    } = usePredict()
+
     const handleOpenAlbum = (album: Parameters<typeof openAlbum>[0]) => {
         resetSort()
         openAlbum(album)
@@ -65,6 +80,15 @@ export default function Home() {
                 actions={
                     <div className="flex items-center gap-4">
                         <BackendHealth />
+                        
+                        <button
+                            onClick={openPredict}
+                            className="bg-stone-800 text-stone-50 font-bold px-5 py-2.5 uppercase text-sm tracking-wider hover:bg-stone-700 hover:scale-105 active:scale-95 transition-all rounded-sm flex items-center gap-2.5 shrink-0 cursor-pointer border border-stone-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                            ¿Es Robe?
+                        </button>
+
                         {compareTracks.length > 0 && (
                             <button
                                 onClick={openCompareModal}
@@ -145,6 +169,19 @@ export default function Home() {
                 tracks={compareTracks}
                 onRemove={removeTrack}
                 onClear={clearAll}
+            />
+
+            {/* Modal de Predicción (Robe-o-metro) */}
+            <PredictModal
+                isOpen={isPredictOpen}
+                isAnimating={isPredictAnimating}
+                text={predictText}
+                setText={setPredictText}
+                result={predictResult}
+                isLoading={isPredictLoading}
+                error={predictError}
+                onRun={runPrediction}
+                onClose={closePredict}
             />
         </main>
     )
