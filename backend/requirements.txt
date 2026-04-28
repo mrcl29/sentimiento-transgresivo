@@ -10,3 +10,6 @@ wordcloud
 matplotlib
 seaborn
 huggingface_hub
+joblib
+numpy
+scikit-learn
