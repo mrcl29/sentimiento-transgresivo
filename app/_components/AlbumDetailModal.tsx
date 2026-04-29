@@ -16,6 +16,7 @@ interface AlbumDetailModalProps {
   onSort: (key: keyof Track) => void
   onViewLyrics: (track: Track) => void
   onToggleCompare: (track: Track) => void
+  onPlay: (track: Track) => void
   isInCompareList: (trackId: string) => boolean
   onClose: () => void
 }
@@ -29,6 +30,7 @@ export default function AlbumDetailModal({
   onSort,
   onViewLyrics,
   onToggleCompare,
+  onPlay,
   isInCompareList,
   onClose,
 }: AlbumDetailModalProps) {
@@ -133,6 +135,7 @@ export default function AlbumDetailModal({
                   track={track}
                   onViewLyrics={onViewLyrics}
                   onToggleCompare={onToggleCompare}
+                  onPlay={onPlay}
                   isInCompareList={isInCompareList(track.track_id)}
                 />
               ))}

@@ -13,3 +13,4 @@ huggingface_hub
 joblib
 numpy
 scikit-learn
+pandas

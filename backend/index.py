@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import sentiment, genius, lyrics, wordcloud, violinplot, predict
+from routes import sentiment, genius, lyrics, wordcloud, violinplot, predict, soundcloud
 
 app = FastAPI(title="Lyric Analysis API")
 
@@ -9,6 +9,7 @@ app.include_router(violinplot.router, prefix="/api/violinplot", tags=["violinplo
 app.include_router(genius.router, prefix="/api/genius", tags=["genius"])
 app.include_router(lyrics.router, prefix="/api/lyrics", tags=["lyrics"])
 app.include_router(predict.router, prefix="/api/predict", tags=["predict"])
+app.include_router(soundcloud.router, prefix="/api/soundcloud", tags=["soundcloud"])
 
 @app.get("/api/health")
 def health_check():

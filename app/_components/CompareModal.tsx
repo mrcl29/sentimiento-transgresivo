@@ -16,6 +16,7 @@ interface CompareModalProps {
     isAnimating: boolean
     onViewLyrics: (track: Track) => void
     onToggleCompare: (track: Track) => void
+    onPlay: (track: Track) => void
     isInCompareList: (trackId: string) => boolean
     onClose: () => void
 }
@@ -31,6 +32,7 @@ export default function CompareModal({
     isAnimating,
     onViewLyrics,
     onToggleCompare,
+    onPlay,
     isInCompareList,
     onClose,
 }: CompareModalProps) {
@@ -209,6 +211,7 @@ export default function CompareModal({
                                                     showArtistAlbum
                                                     onViewLyrics={onViewLyrics}
                                                     onToggleCompare={onToggleCompare}
+                                                    onPlay={onPlay}
                                                     isInCompareList={isInCompareList(track.track_id)}
                                                 />
                                             ))}

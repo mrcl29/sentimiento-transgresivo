@@ -14,7 +14,9 @@ import CompareBar from '@/app/_components/CompareBar'
 import CompareModal from '@/app/_components/CompareModal'
 import BackendHealth from '@/app/_components/BackendHealth'
 import PredictModal from '@/app/_components/PredictModal'
+import SoundCloudModal from '@/app/_components/SoundCloudModal'
 import { usePredict } from '@/app/_hooks/usePredict'
+import { useSoundCloud } from '@/app/_hooks/useSoundCloud'
 
 export default function Home() {
     const { extremoduroAlbums, robeAlbums } = useAlbumData()
@@ -60,6 +62,15 @@ export default function Home() {
         closePredict,
         runPrediction
     } = usePredict()
+    
+    const {
+        selectedTrack: soundCloudTrack,
+        isAnimating: isSoundCloudAnimating,
+        iframeUrl,
+        isLoading: isLoadingSoundCloud,
+        openSoundCloud,
+        closeSoundCloud,
+    } = useSoundCloud()
 
     const handleOpenAlbum = (album: Parameters<typeof openAlbum>[0]) => {
         resetSort()
@@ -133,6 +144,7 @@ export default function Home() {
                     onSort={handleSort}
                     onViewLyrics={openLyrics}
                     onToggleCompare={toggleTrack}
+                    onPlay={openSoundCloud}
                     isInCompareList={isInList}
                     onClose={closeAlbum}
                 />
@@ -145,6 +157,7 @@ export default function Home() {
                     isAnimating={isCompareAnimating}
                     onViewLyrics={openLyrics}
                     onToggleCompare={toggleTrack}
+                    onPlay={openSoundCloud}
                     isInCompareList={isInList}
                     onClose={closeCompareModal}
                 />
@@ -183,6 +196,17 @@ export default function Home() {
                 onRun={runPrediction}
                 onClose={closePredict}
             />
+
+            {/* Modal de SoundCloud */}
+            {soundCloudTrack && (
+                <SoundCloudModal
+                    track={soundCloudTrack}
+                    isAnimating={isSoundCloudAnimating}
+                    iframeUrl={iframeUrl}
+                    isLoading={isLoadingSoundCloud}
+                    onClose={closeSoundCloud}
+                />
+            )}
         </main>
     )
 }
