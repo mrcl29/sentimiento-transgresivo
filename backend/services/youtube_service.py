@@ -13,8 +13,10 @@ class YouTubeService:
     async def search_video(self, query: str, artist: str = ""):
         """Busca un video en YouTube y devuelve el videoId del mejor resultado."""
         if not self.api_key:
+            print("ERROR: YOUTUBE_API_KEY no encontrada en variables de entorno")
             raise HTTPException(status_code=500, detail="YouTube API Key not configured")
 
+        print(f"Buscando en YouTube: {query}")
         params = {
             "part": "snippet",
             "q": query,
@@ -27,6 +29,7 @@ class YouTubeService:
             response = await client.get(self.search_url, params=params)
 
             if response.status_code != 200:
+                print(f"Error de YouTube API ({response.status_code}): {response.text}")
                 raise HTTPException(status_code=response.status_code, detail=f"Error searching YouTube: {response.text}")
 
             data = response.json()
