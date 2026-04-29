@@ -8,6 +8,8 @@ from services.sentiment_service import SentimentService
 from services.genius_service import GeniusService
 from services.lyrics_ovh_service import LyricsOvhService
 from services.lyrics_service import UnifiedLyricsService
+from services.soundcloud_service import SoundCloudService
+from services.youtube_service import YouTubeService
 
 client = TestClient(app)
 
@@ -22,9 +24,9 @@ async def test_sentiment_service_positive():
 
     mock_hf_response = [
         [
-            {"label": "POS", "score": 0.95},
-            {"label": "NEG", "score": 0.03},
-            {"label": "NEU", "score": 0.02}
+            {"label": "5 stars", "score": 0.95},
+            {"label": "1 star", "score": 0.03},
+            {"label": "3 stars", "score": 0.02}
         ]
     ]
 
@@ -33,6 +35,10 @@ async def test_sentiment_service_positive():
             pass
         def json(self):
             return mock_hf_response
+        @property
+        def content(self):
+            import json
+            return json.dumps(mock_hf_response).encode()
 
     with patch("httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
         mock_post.return_value = MockResponse()
@@ -56,7 +62,7 @@ def test_sentiment_endpoint():
         "score": 0.1
     }
 
-    with patch("api.services.sentiment_service.SentimentService.analyze", new_callable=AsyncMock) as mock_analyze:
+    with patch("services.sentiment_service.SentimentService.analyze", new_callable=AsyncMock) as mock_analyze:
         mock_analyze.return_value = mock_service_response
 
         response = client.post(
@@ -98,7 +104,7 @@ def test_genius_endpoint():
     """Verifica el endpoint GET /api/genius/search."""
     mock_response_data = {"meta": {"status": 200}, "response": {"hits": [{"result": {"title": "Jesucristo García"}}]}}
 
-    with patch("api.services.genius_service.GeniusService.search", new_callable=AsyncMock) as mock_search:
+    with patch("services.genius_service.GeniusService.search", new_callable=AsyncMock) as mock_search:
         mock_search.return_value = mock_response_data
 
         response = client.get("/api/genius/search?q=Extremoduro")
@@ -127,7 +133,7 @@ async def test_genius_service_get_lyrics():
 
 def test_genius_endpoint_lyrics():
     """Verifica el endpoint GET /api/genius/lyrics."""
-    with patch("api.services.genius_service.GeniusService.get_lyrics", new_callable=AsyncMock) as mock_get_lyrics:
+    with patch("services.genius_service.GeniusService.get_lyrics", new_callable=AsyncMock) as mock_get_lyrics:
         mock_get_lyrics.return_value = "La letra de la canción"
 
         response = client.get("/api/genius/lyrics?song=Jesucristo%20García&artist=Extremoduro")
@@ -160,8 +166,8 @@ async def test_unified_lyrics_service_fallback():
     """Verifica el fallback de OVH a Genius en UnifiedLyricsService."""
     svc = UnifiedLyricsService()
 
-    with patch("api.services.lyrics_ovh_service.LyricsOvhService.get_lyrics", new_callable=AsyncMock) as mock_ovh:
-        with patch("api.services.genius_service.GeniusService.get_lyrics", new_callable=AsyncMock) as mock_genius:
+    with patch("services.lyrics_ovh_service.LyricsOvhService.get_lyrics", new_callable=AsyncMock) as mock_ovh:
+        with patch("services.genius_service.GeniusService.get_lyrics", new_callable=AsyncMock) as mock_genius:
             # Simulamos que OVH falla
             mock_ovh.side_effect = Exception("OVH Error")
             mock_genius.return_value = "Letra de prueba Genius"
@@ -174,7 +180,7 @@ async def test_unified_lyrics_service_fallback():
 
 def test_generic_lyrics_endpoint():
     """Verifica el endpoint GET /api/lyrics/."""
-    with patch("api.services.lyrics_service.UnifiedLyricsService.get_lyrics", new_callable=AsyncMock) as mock_get_lyrics:
+    with patch("services.lyrics_service.UnifiedLyricsService.get_lyrics", new_callable=AsyncMock) as mock_get_lyrics:
         mock_get_lyrics.return_value = "Letra unificada"
 
         response = client.get("/api/lyrics/?song=Standby&artist=Extremoduro")
@@ -201,3 +207,111 @@ def test_wordcloud_endpoint_empty():
     )
     assert response.status_code == 400
     assert "vacío" in response.json()["detail"]
+
+@pytest.mark.asyncio
+async def test_soundcloud_service_token():
+    """Verifica la obtención de token de SoundCloud con Basic Auth."""
+    svc = SoundCloudService()
+    svc.client_id = "test_id"
+    svc.client_secret = "test_secret"
+    
+    mock_token_response = {"access_token": "fake_access_token"}
+
+    class MockResponse:
+        status_code = 200
+        def json(self):
+            return mock_token_response
+
+    with patch("httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
+        mock_post.return_value = MockResponse()
+        
+        token = await svc.get_access_token()
+        
+        assert token == "fake_access_token"
+        mock_post.assert_called_once()
+        args, kwargs = mock_post.call_args
+        assert "Authorization" in kwargs["headers"]
+        assert "Basic" in kwargs["headers"]["Authorization"]
+
+@pytest.mark.asyncio
+async def test_soundcloud_service_search():
+    """Verifica la búsqueda de canciones con filtrado por artista."""
+    svc = SoundCloudService()
+    
+    mock_tracks = [
+        {"title": "Cover de Canción", "user": {"username": "Fan de Rock"}, "permalink_url": "url_cover"},
+        {"title": "Canción Original", "user": {"username": "Extremoduro Oficial"}, "permalink_url": "url_original"}
+    ]
+
+    class MockResponse:
+        status_code = 200
+        def json(self):
+            return mock_tracks
+
+    with patch("services.soundcloud_service.SoundCloudService.get_access_token", new_callable=AsyncMock) as mock_token:
+        mock_token.return_value = "fake_token"
+        with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = MockResponse()
+            
+            url = await svc.search_track("Canción", artist="Extremoduro")
+            
+            # Debería elegir la segunda canción porque coincide el artista en el username
+            assert url == "url_original"
+
+def test_soundcloud_iframe_endpoint():
+    """Verifica el endpoint GET /api/soundcloud/iframe."""
+    mock_iframe_url = "https://w.soundcloud.com/player/?url=fake_url&amp;color=d50000"
+
+    with patch("services.soundcloud_service.SoundCloudService.get_track_iframe", new_callable=AsyncMock) as mock_get_iframe:
+        mock_get_iframe.return_value = mock_iframe_url
+
+        response = client.get("/api/soundcloud/iframe?song=Standby&artist=Extremoduro")
+
+        assert response.status_code == 200
+        assert response.json() == {"iframe_url": mock_iframe_url}
+        mock_get_iframe.assert_called_once_with("Standby", "Extremoduro")
+
+@pytest.mark.asyncio
+async def test_youtube_service_search():
+    """Verifica la búsqueda de videos con filtrado por artista."""
+    svc = YouTubeService()
+    svc.api_key = "fake_key"
+    
+    mock_response = {
+        "items": [
+            {
+                "id": {"videoId": "id_fan"},
+                "snippet": {"title": "Cover de Canción", "channelTitle": "Fan de Rock"}
+            },
+            {
+                "id": {"videoId": "id_oficial"},
+                "snippet": {"title": "Canción Original", "channelTitle": "Extremoduro Oficial"}
+            }
+        ]
+    }
+
+    class MockResponse:
+        status_code = 200
+        def json(self):
+            return mock_response
+
+    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+        mock_get.return_value = MockResponse()
+        
+        video_id = await svc.search_video("Canción", artist="Extremoduro")
+        
+        # Debería elegir el segundo video porque coincide el artista en el channelTitle
+        assert video_id == "id_oficial"
+
+def test_youtube_iframe_endpoint():
+    """Verifica el endpoint GET /api/youtube/iframe."""
+    mock_iframe_url = "https://www.youtube.com/embed/fake_id"
+
+    with patch("services.youtube_service.YouTubeService.get_track_iframe", new_callable=AsyncMock) as mock_get_iframe:
+        mock_get_iframe.return_value = mock_iframe_url
+
+        response = client.get("/api/youtube/iframe?song=Standby&artist=Extremoduro")
+
+        assert response.status_code == 200
+        assert response.json() == {"iframe_url": mock_iframe_url}
+        mock_get_iframe.assert_called_once_with("Standby", "Extremoduro")

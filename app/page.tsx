@@ -15,8 +15,10 @@ import CompareModal from '@/app/_components/CompareModal'
 import BackendHealth from '@/app/_components/BackendHealth'
 import PredictModal from '@/app/_components/PredictModal'
 import SoundCloudModal from '@/app/_components/SoundCloudModal'
+import YouTubeModal from '@/app/_components/YouTubeModal'
 import { usePredict } from '@/app/_hooks/usePredict'
 import { useSoundCloud } from '@/app/_hooks/useSoundCloud'
+import { useYouTube } from '@/app/_hooks/useYouTube'
 
 export default function Home() {
     const { extremoduroAlbums, robeAlbums } = useAlbumData()
@@ -64,13 +66,13 @@ export default function Home() {
     } = usePredict()
     
     const {
-        selectedTrack: soundCloudTrack,
-        isAnimating: isSoundCloudAnimating,
-        iframeUrl,
-        isLoading: isLoadingSoundCloud,
-        openSoundCloud,
-        closeSoundCloud,
-    } = useSoundCloud()
+        selectedTrack: youTubeTrack,
+        isAnimating: isYouTubeAnimating,
+        iframeUrl: youTubeIframeUrl,
+        isLoading: isLoadingYouTube,
+        openYouTube,
+        closeYouTube,
+    } = useYouTube()
 
     const handleOpenAlbum = (album: Parameters<typeof openAlbum>[0]) => {
         resetSort()
@@ -144,7 +146,7 @@ export default function Home() {
                     onSort={handleSort}
                     onViewLyrics={openLyrics}
                     onToggleCompare={toggleTrack}
-                    onPlay={openSoundCloud}
+                    onPlay={openYouTube}
                     isInCompareList={isInList}
                     onClose={closeAlbum}
                 />
@@ -157,7 +159,7 @@ export default function Home() {
                     isAnimating={isCompareAnimating}
                     onViewLyrics={openLyrics}
                     onToggleCompare={toggleTrack}
-                    onPlay={openSoundCloud}
+                    onPlay={openYouTube}
                     isInCompareList={isInList}
                     onClose={closeCompareModal}
                 />
@@ -197,14 +199,14 @@ export default function Home() {
                 onClose={closePredict}
             />
 
-            {/* Modal de SoundCloud */}
-            {soundCloudTrack && (
-                <SoundCloudModal
-                    track={soundCloudTrack}
-                    isAnimating={isSoundCloudAnimating}
-                    iframeUrl={iframeUrl}
-                    isLoading={isLoadingSoundCloud}
-                    onClose={closeSoundCloud}
+            {/* Modal de YouTube */}
+            {youTubeTrack && (
+                <YouTubeModal
+                    track={youTubeTrack}
+                    isAnimating={isYouTubeAnimating}
+                    iframeUrl={youTubeIframeUrl}
+                    isLoading={isLoadingYouTube}
+                    onClose={closeYouTube}
                 />
             )}
         </main>
