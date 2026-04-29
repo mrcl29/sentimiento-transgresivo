@@ -54,7 +54,15 @@ Para cada canción se visualizan los datos extraídos de la Spotify Web API:
 
 ### 📜 Análisis de Letra Individual
 - Visualizador de letra integrado (vía Genius API)
-- Análisis de sentimiento on-demand con `pysentimiento` (POS / NEG / NEU + score de confianza)
+- Análisis de sentimiento on-demand mediante **Hugging Face Inference API** (modelo `bert-base-multilingual-uncased-sentiment`)
+
+### 📻 Integración Multimedia
+- Reproductores integrados de **YouTube** y **SoundCloud** para escuchar cualquier canción sin salir de la app.
+- Búsqueda inteligente de versiones oficiales y audios de alta fidelidad.
+
+### 🧠 IA Predictiva (Robe Classifier)
+- Herramienta que utiliza un modelo de Machine Learning (`TfidfVectorizer` + `MultinomialNB`) para predecir si un texto o letra personalizada encaja con el estilo de escritura de Robe Iniesta.
+- Visualización de probabilidad en tiempo real.
 
 ---
 
@@ -68,8 +76,9 @@ sentimiento-transgresivo/
 │   ├── _lib/              # Constantes compartidas (columnas de métricas)
 │   └── _types/            # Interfaces TypeScript (Track, Album, MetricColumn…)
 ├── backend/               # API FastAPI (Python)
-│   ├── routes/            # Endpoints: sentiment, lyrics, wordcloud, violinplot, genius
-│   └── services/          # Lógica: pysentimiento, lyricsgenius, lyrics.ovh
+│   ├── data/              # Modelos de ML (.joblib)
+│   ├── routes/            # Endpoints: sentiment, lyrics, wordcloud, violinplot, genius, predict, youtube, soundcloud
+│   └── services/          # Lógica: pysentimiento, lyricsgenius, youtube_v3, soundcloud_oauth, predict_service
 ├── data/
 │   └── dataset.json       # Dataset pre-computado (274 KB, carga instantánea)
 └── public/assets/         # Portadas de álbumes
@@ -81,7 +90,7 @@ El frontend **no ejecuta Machine Learning en tiempo real**. Todo el análisis pe
 
 El backend (FastAPI en Render.com) solo se activa para operaciones on-demand:
 - Buscar y obtener letras (Genius API / lyrics.ovh)
-- Analizar sentimiento de una letra concreta (`pysentimiento` con modelo en español)
+- Analizar sentimiento de una letra concreta (Inferencia con BERT Multilingual)
 - Generar la nube de palabras y el violin plot para la comparación
 
 ---
@@ -137,7 +146,11 @@ GENIUS_ACCESS_TOKEN=...
 SPOTIFY_CLIENT_ID=...
 SPOTIFY_CLIENT_SECRET=...
 
-HF_TOKEN=...          # Token de Hugging Face (para pysentimiento)
+HF_TOKEN=...              # Token de Hugging Face (para pysentimiento)
+
+YOUTUBE_API_KEY=...       # YouTube Data API v3
+SOUNDCLOUD_CLIENT_ID=...   # SoundCloud API
+SOUNDCLOUD_CLIENT_SECRET=...
 ```
 
 Arrancar el servidor:
@@ -162,7 +175,7 @@ La API estará disponible en [http://localhost:8080](http://localhost:8080) con 
 | Runtime / Package manager | Bun |
 | Gráficos | Recharts |
 | Backend API | FastAPI (Python) |
-| Análisis de sentimiento | `pysentimiento` (modelo `robertuito`) |
+| Análisis de sentimiento | Hugging Face (`bert-base-multilingual-uncased-sentiment`) |
 | Letras | Genius API + lyrics.ovh (fallback) |
 | Visualizaciones Python | `matplotlib`, `seaborn`, `wordcloud` |
 | Despliegue frontend | Vercel |
